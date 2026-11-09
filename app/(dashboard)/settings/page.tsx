@@ -7,7 +7,7 @@ export default async function SettingsPage() {
   return (
     <div>
       <h1 className="text-2xl font-medium">Business settings</h1>
-      <p className="mt-1 text-sm text-ink-soft">
+      <p className="mt-1 text-sm text-muted">
         This information appears on every invoice and email you send.
       </p>
 

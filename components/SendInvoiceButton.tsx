@@ -9,7 +9,7 @@ export function SendInvoiceButton({ invoiceId, hasEmail }: { invoiceId: string; 
 
   if (!hasEmail) {
     return (
-      <p className="text-sm text-ink-soft">
+      <p className="text-sm text-muted">
         Add an email address for this customer before sending.
       </p>
     );
@@ -19,10 +19,10 @@ export function SendInvoiceButton({ invoiceId, hasEmail }: { invoiceId: string; 
     <form action={formAction} className="space-y-2">
       <SendButton />
       {state?.error && (
-        <p className="text-sm text-danger bg-danger-soft rounded-sm px-3 py-2">{state.error}</p>
+        <p className="text-sm text-error bg-error-bg rounded-sm px-3 py-2">{state.error}</p>
       )}
       {state?.success && (
-        <p className="text-sm text-accent bg-accent-soft rounded-sm px-3 py-2">Invoice sent.</p>
+        <p className="text-sm text-success bg-success-bg rounded-sm px-3 py-2">Invoice sent.</p>
       )}
     </form>
   );
@@ -34,7 +34,7 @@ function SendButton() {
     <button
       type="submit"
       disabled={pending}
-      className="bg-accent text-white px-4 py-2 rounded-sm text-sm hover:opacity-90 transition-opacity disabled:opacity-60 w-full"
+      className="bg-btn text-btn-text px-4 py-2 rounded-sm text-sm hover:opacity-90 transition-opacity disabled:opacity-60 w-full"
     >
       {pending ? "Sending…" : "Send invoice"}
     </button>

@@ -1,42 +1,51 @@
-import { Document, Page, Text, View, StyleSheet, Image } from "@react-pdf/renderer";
+import { Document, Page, Text, View, Image, StyleSheet } from "@react-pdf/renderer";
 import { formatMoney } from "@/lib/invoice-calculations";
+import { PDF_COLORS } from "./theme";
 
-const styles = StyleSheet.create({
-  page: { padding: 40, fontSize: 10, color: "#17233b", fontFamily: "Helvetica" },
-  headerRow: { flexDirection: "row", justifyContent: "space-between", marginBottom: 24 },
-  logo: { width: 100, maxHeight: 60, objectFit: "contain", marginBottom: 8 },
-  businessName: { fontSize: 16, fontWeight: 700, marginBottom: 4 },
-  small: { fontSize: 9, color: "#4a5468", marginBottom: 1 },
-  invoiceTitle: { fontSize: 20, fontWeight: 700, textAlign: "right" },
-  invoiceMeta: { fontSize: 9, color: "#4a5468", textAlign: "right", marginTop: 2 },
-  section: { marginBottom: 20 },
-  label: { fontSize: 8, color: "#4a5468", textTransform: "uppercase", marginBottom: 3 },
-  table: { marginTop: 10, borderTop: "1pt solid #e2e0d8" },
-  tableRow: {
-    flexDirection: "row",
-    borderBottom: "1pt solid #e2e0d8",
-    paddingVertical: 6,
-  },
-  tableHeaderRow: {
-    flexDirection: "row",
-    paddingVertical: 6,
-  },
-  colDescription: { flex: 4 },
-  colQty: { flex: 1, textAlign: "right" },
-  colPrice: { flex: 1.5, textAlign: "right" },
-  colTotal: { flex: 1.5, textAlign: "right" },
-  totalsBlock: { marginTop: 16, alignSelf: "flex-end", width: 220 },
-  totalsRow: { flexDirection: "row", justifyContent: "space-between", marginBottom: 4 },
-  totalsLabel: { color: "#4a5468" },
-  grandTotalRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginTop: 4,
-    paddingTop: 6,
-  },
-  grandTotalLabel: { fontWeight: 700 },
-  notes: { marginTop: 28, fontSize: 9, color: "#4a5468" },
-});
+const INK = PDF_COLORS.text;
+const INK_SOFT = PDF_COLORS.textMuted;
+const BORDER = PDF_COLORS.line;
+
+function buildStyles(accentColor: string) {
+  return StyleSheet.create({
+    page: { padding: 40, fontSize: 10, color: INK, fontFamily: "Helvetica" },
+    headerRow: { flexDirection: "row", justifyContent: "space-between", marginBottom: 24 },
+    logo: { width: 48, height: 48, marginBottom: 8, objectFit: "contain" },
+    businessName: { fontSize: 16, fontWeight: 700, marginBottom: 4 },
+    small: { fontSize: 9, color: INK_SOFT, marginBottom: 1 },
+    invoiceTitle: { fontSize: 20, fontWeight: 700, textAlign: "right", color: accentColor },
+    invoiceMeta: { fontSize: 9, color: INK_SOFT, textAlign: "right", marginTop: 2 },
+    section: { marginBottom: 20 },
+    label: { fontSize: 8, color: INK_SOFT, textTransform: "uppercase", marginBottom: 3 },
+    table: { marginTop: 10, borderTop: `1pt solid ${BORDER}` },
+    tableRow: {
+      flexDirection: "row",
+      borderBottom: `1pt solid ${BORDER}`,
+      paddingVertical: 6,
+    },
+    tableHeaderRow: {
+      flexDirection: "row",
+      paddingVertical: 6,
+      borderBottom: `1.5pt solid ${accentColor}`,
+    },
+    colDescription: { flex: 4 },
+    colQty: { flex: 1, textAlign: "right" },
+    colPrice: { flex: 1.5, textAlign: "right" },
+    colTotal: { flex: 1.5, textAlign: "right" },
+    totalsBlock: { marginTop: 16, alignSelf: "flex-end", width: 220 },
+    totalsRow: { flexDirection: "row", justifyContent: "space-between", marginBottom: 4 },
+    totalsLabel: { color: INK_SOFT },
+    grandTotalRow: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      borderTop: `1pt solid ${accentColor}`,
+      marginTop: 4,
+      paddingTop: 6,
+    },
+    grandTotalLabel: { fontWeight: 700, color: accentColor },
+    notes: { marginTop: 28, fontSize: 9, color: INK_SOFT },
+  });
+}
 
 export type PdfInvoiceData = {
   invoice_number: string;
@@ -54,12 +63,12 @@ export type PdfInvoiceData = {
 
 export type PdfBusinessData = {
   name: string;
+  logo_url?: string | null;
   email: string | null;
   phone: string | null;
   address: string | null;
   tax_number: string | null;
-  logo_url: string | null;
-  invoice_accent_color: string;
+  invoice_accent_color?: string | null;
 };
 
 export type PdfCustomerData = {
@@ -69,11 +78,6 @@ export type PdfCustomerData = {
 };
 
 export type PdfItem = { description: string; quantity: number; unit_price: number; line_total: number };
-
-function isRenderableLogo(url: string | null): url is string {
-  if (!url) return false;
-  return !/\.svg(\?|$)/i.test(url);
-}
 
 export function InvoicePdf({
   invoice,
@@ -86,17 +90,19 @@ export function InvoicePdf({
   customer: PdfCustomerData;
   items: PdfItem[];
 }) {
-  const accent = business.invoice_accent_color || "#2f6f5e";
-  const showLogo = isRenderableLogo(business.logo_url);
+  const accentColor = business.invoice_accent_color || PDF_COLORS.defaultAccent;
+  const styles = buildStyles(accentColor);
 
   return (
     <Document>
       <Page size="A4" style={styles.page}>
         <View style={styles.headerRow}>
           <View>
-            {showLogo ? (
-              // eslint-disable-next-line jsx-a11y/alt-text
-              <Image src={business.logo_url as string} style={styles.logo} />
+            {business.logo_url ? (
+              // react-pdf fetches this URL at render time, so it must be
+              // publicly reachable (the Supabase storage bucket is public).
+              // eslint-disable-next-line jsx-a11y/alt-text -- react-pdf's Image, not an <img>
+              <Image src={business.logo_url} style={styles.logo} />
             ) : null}
             <Text style={styles.businessName}>{business.name || "Your business"}</Text>
             {business.address ? <Text style={styles.small}>{business.address}</Text> : null}
@@ -107,7 +113,7 @@ export function InvoicePdf({
             ) : null}
           </View>
           <View>
-            <Text style={[styles.invoiceTitle, { color: accent }]}>INVOICE</Text>
+            <Text style={styles.invoiceTitle}>INVOICE</Text>
             <Text style={styles.invoiceMeta}>{invoice.invoice_number}</Text>
             <Text style={styles.invoiceMeta}>Issued {invoice.issue_date}</Text>
             {invoice.due_date ? (
@@ -124,7 +130,7 @@ export function InvoicePdf({
         </View>
 
         <View style={styles.table}>
-          <View style={[styles.tableHeaderRow, { borderBottom: `1pt solid ${accent}` }]}>
+          <View style={styles.tableHeaderRow}>
             <Text style={styles.colDescription}>Description</Text>
             <Text style={styles.colQty}>Qty</Text>
             <Text style={styles.colPrice}>Unit price</Text>
@@ -153,11 +159,9 @@ export function InvoicePdf({
             <Text style={styles.totalsLabel}>Tax</Text>
             <Text>{formatMoney(invoice.tax_total, invoice.currency)}</Text>
           </View>
-          <View style={[styles.grandTotalRow, { borderTop: `1pt solid ${accent}` }]}>
-            <Text style={[styles.grandTotalLabel, { color: accent }]}>Total</Text>
-            <Text style={[styles.grandTotalLabel, { color: accent }]}>
-              {formatMoney(invoice.total, invoice.currency)}
-            </Text>
+          <View style={styles.grandTotalRow}>
+            <Text style={styles.grandTotalLabel}>Total</Text>
+            <Text style={styles.grandTotalLabel}>{formatMoney(invoice.total, invoice.currency)}</Text>
           </View>
           {invoice.amount_paid > 0 ? (
             <View style={styles.totalsRow}>
@@ -166,7 +170,14 @@ export function InvoicePdf({
             </View>
           ) : null}
         </View>
-        </Page>
-        </Document>
+
+        {invoice.notes ? (
+          <View style={styles.notes}>
+            <Text style={styles.label}>Notes</Text>
+            <Text>{invoice.notes}</Text>
+          </View>
+        ) : null}
+      </Page>
+    </Document>
   );
 }

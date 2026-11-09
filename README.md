@@ -1,221 +1,128 @@
-# Flow Ecosystem
+# InvoiceFlow
 
-Flow is a connected ecosystem of lightweight business applications designed to help businesses manage essential workflows through focused, purpose-built tools. Each application solves a distinct business problem while sharing a common foundation for identity, organisations, permissions, and relevant business data.
+A focused invoicing SaaS for freelancers and small businesses: create
+customers, build invoices, send them by email with a PDF attached, and track
+payments — without the overhead of a full accounting platform.
 
-The ecosystem currently consists of **InvoiceFlow**, **OrderFlow**, and **SpendFlow**.
+## Stack
 
-## Vision and design principles
+- **Next.js 15** (App Router) + **TypeScript** + **Tailwind CSS**
+- **Supabase** — Postgres, Auth, Row Level Security
+- **Zod** — server-side validation
+- **Resend** — transactional email
+- **@react-pdf/renderer** — PDF generation
+- **date-fns**
 
-Flow is intended to make everyday business operations easier to manage without forcing businesses to adopt one oversized, all-in-one application.
+## What's implemented
 
-The ecosystem follows these principles:
-
-- **Focused applications:** Each product has a clear purpose and its own product-specific workflows.
-- **Shared identity:** Users should be able to use the same Flow account across applications.
-- **Shared business context:** Applications can use common organisation, membership, role, and branch records where appropriate.
-- **Controlled data access:** Shared infrastructure does not mean unrestricted access to every product's data. Access must be enforced through application permissions and Supabase Row Level Security (RLS).
-- **Independent deployment:** Each application should be buildable and deployable independently.
-- **Lightweight architecture:** Prefer simple, maintainable solutions. Add shared packages and infrastructure only when there is a clear need.
-- **Room to grow:** Products can gain additional features without requiring the entire ecosystem to be redesigned.
-
-## Applications
-
-### InvoiceFlow
-
-**Purpose:** Simplify invoicing for small businesses, freelancers, and service providers.
-
-InvoiceFlow focuses on the practical invoicing workflow rather than attempting to be a full accounting system.
-
-Planned and core capabilities include:
-
-- Business profile and customer management.
-- Product and service details.
-- Invoice creation and management.
-- Tax, discount, subtotal, and total calculations.
-- Invoice preview and PDF generation.
-- Emailing invoices to customers.
-- Invoice status tracking, including paid and outstanding invoices.
-- Basic revenue and outstanding-payment summaries.
-
-InvoiceFlow owns its invoice-specific workflows and records. Other Flow applications should not automatically gain access to invoice data merely because they share the same identity platform.
-
-### OrderFlow
-
-**Purpose:** Streamline order placement, processing, and communication between a business and its clients.
-
-OrderFlow focuses on managing orders and reducing manual steps in the order workflow.
-
-Planned capabilities include:
-
-- Order creation and management.
-- Order status tracking.
-- Recording order activity in the database.
-- Client email notifications and workflow updates.
-- A foundation for future inventory, stock, and logistics integrations.
-
-OrderFlow owns its order-specific workflows and records. Any future integration with inventory, invoicing, or logistics should use explicit data relationships and permissions rather than creating unnecessary coupling between applications.
-
-### SpendFlow
-
-**Purpose:** Help businesses record, monitor, and understand purchases and expenditure across branches.
-
-SpendFlow is designed around the challenge of tracking purchases made by different branches, including purchases supported by card transactions and paper receipts. It aims to reduce paper-based administration and make spending information easier for head office to review.
-
-Planned capabilities include:
-
-- Recording and categorising purchases.
-- Capturing information from receipts and card-purchase records.
-- Associating expenditure with the correct business and branch.
-- Centralising purchase records for head-office review.
-- Branch-level spending summaries.
-- Basic business intelligence and expenditure reporting.
-
-SpendFlow owns its purchase and expenditure records. Access to branch-level and organisation-wide information must follow the user's permissions.
-
-## Repository structure
-
-The repository is a **monorepo**: one Git repository containing multiple applications and, where useful, shared packages. A monorepo does not mean that the products are one application or must be deployed together.
-
-The following is the intended structure. Directories should be added as they become necessary; this tree is a guide rather than a requirement to create empty folders in advance.
-
-```text
-flow/
-├── apps/
-│   ├── invoiceflow/          # Invoicing application
-│   ├── orderflow/            # Order management application
-│   └── spendflow/            # Purchase tracking and reporting application
-│
-├── packages/
-│   ├── shared-ui/            # Reusable UI components, if needed
-│   ├── shared-types/         # Types shared across applications, if needed
-│   └── shared-utils/         # Small, genuinely shared utilities, if needed
-│
-├── supabase/
-│   ├── migrations/           # Version-controlled database migrations
-│   └── functions/            # Shared or platform-level Edge Functions, if needed
-│
-├── package.json              # Root scripts and workspace configuration
-├── package-lock.json         # npm dependency lockfile, if using npm
-├── tsconfig.base.json        # Shared TypeScript defaults, if appropriate
-├── turbo.json                # Optional Turborepo configuration
-├── .gitignore
-└── README.md
-```
-
-### `apps/`
-
-Each application has its own interface, routes, product logic, dependencies where appropriate, environment configuration, and build/deployment configuration.
-
-- `apps/invoiceflow/` contains InvoiceFlow.
-- `apps/orderflow/` contains OrderFlow.
-- `apps/spendflow/` contains SpendFlow.
-
-Applications should remain independently understandable and deployable. Avoid placing product-specific business logic in shared packages just to reduce file counts.
-
-### `packages/`
-
-This directory is for code that genuinely needs to be reused by more than one application.
-
-- `shared-ui/`: reusable interface elements and design primitives.
-- `shared-types/`: shared TypeScript types for common concepts such as organisations or memberships.
-- `shared-utils/`: small shared utility functions.
-
-These packages are optional. Create them only when real reuse exists, and keep product-specific functionality within its application.
-
-### `supabase/`
-
-This directory contains version-controlled backend assets for the shared Supabase environment.
-
-- `migrations/` records database schema changes in a repeatable, reviewable order.
-- `functions/` may contain Edge Functions used across applications or by the shared platform.
-
-The Supabase project itself is hosted separately. This repository contains code and configuration, not the live database service.
-
-Do not commit database passwords, service-role keys, access tokens, or other secrets. Use environment variables and the hosting provider's secret-management settings.
-
-## Shared platform and data boundaries
-
-The applications can share a Supabase project while keeping their business responsibilities distinct.
-
-### Common platform data
-
-The shared foundation may include:
-
-- **Users and authentication:** Supabase Auth manages user identity and sign-in.
-- **Organisations:** represent the businesses using Flow.
-- **Memberships:** connect users to organisations.
-- **Roles and permissions:** determine what a user may do.
-- **Branches:** represent business locations where the organisation needs them.
-
-The exact schema should be established through reviewed migrations. Avoid duplicating the same organisation or membership model separately in each application.
-
-### Product-specific data
-
-Keep each product's operational data clearly scoped. Examples include:
-
-- InvoiceFlow: invoices, invoice line items, customers, and invoicing-specific settings.
-- OrderFlow: orders, order items, and order-processing events.
-- SpendFlow: purchases, receipt records, expenditure categories, and spending summaries.
-
-Names and table boundaries may change as the implementation evolves. The important rule is to define ownership and access explicitly.
-
-### Security requirements
-
-- Enable and test Row Level Security on tables exposed to client applications.
-- Check organisation membership and role permissions before allowing access to business records.
-- Apply branch-level restrictions where required.
-- Never rely only on hiding a button or page in the frontend as a security control.
-- Keep privileged service-role credentials on trusted server-side infrastructure only.
-- Share data between products only when the use case, schema, and permissions are clear.
-
-## Development and deployment
-
-### Independent applications
-
-Each application should be runnable and deployable on its own. A change to one application should not automatically require a release of the others, unless the change affects a shared dependency or backend contract.
-
-A hosting provider such as Vercel can deploy each application from its directory in the monorepo. Each deployment must be configured with the correct application root, build settings, and environment variables.
-
-Example future subdomains:
-
-- `invoiceflow.example.com`
-- `orderflow.example.com`
-- `spendflow.example.com`
-- `example.com` for a Flow landing page, if one is created.
-
-These are illustrative only; actual domains must be configured separately.
-
-### Workspace and build tooling
-
-Start with a simple workspace setup, such as npm workspaces, if the applications use compatible JavaScript/TypeScript tooling. Add Turborepo only if build orchestration, caching, or task coordination becomes useful. Do not introduce tools solely because they are common in monorepos.
-
-Each application should document its own local setup and scripts as implementation details are finalised.
-
-## Git workflow
-
-- `main` is the stable integration branch.
-- Use short-lived feature or fix branches for work in progress.
-- Do not use permanent branches as separate homes for InvoiceFlow, OrderFlow, and SpendFlow.
-- Keep commits focused and describe the change clearly.
-- Review database migrations and shared-package changes carefully because they may affect multiple applications.
-
-Example branch names:
-
-- `feat/invoice-pdf`
-- `fix/order-email-notification`
-- `feat/spendflow-branch-reports`
-- `chore/shared-auth-types`
-
-## Current status
-
-This README describes the intended architecture and product direction. Feature lists and directory structures are plans, not a claim that every capability or directory has already been implemented. Update this document as the architecture and applications evolve.
-
-## Summary
-
-**Flow is one ecosystem with three focused products:**
-
-- **InvoiceFlow** — create, send, and track invoices.
-- **OrderFlow** — manage orders and client communication.
-- **SpendFlow** — record purchases and understand expenditure across branches.
-
-The repository keeps their code together for maintainability and reuse, while the applications remain separate products with independent deployments and controlled access to a shared platform.
+- Sign up / log in / log out / password reset, via Supabase Auth
+- Business profile settings (name, contact info, tax info, invoice defaults,
+  logo, invoice accent colour)
+- Customer CRUD with per-customer invoice history
+- Invoice creation and editing with dynamic line items, discounts, tax, and a
+  live totals preview
+- Invoice statuses: draft, sent, viewed, **partially paid** (derived), paid,
+  overdue (derived), cancelled
+- PDF generation and download — themed with your logo and accent colour —
+  both for the business owner and on the public invoice link
+- Email delivery via Resend, with the PDF attached and a link to the public
+  invoice page
+- A public, tokenised invoice page customers can open without an account
+- Manual payment recording (including partial payments), with invoices
+  auto-marked paid once fully covered
+- A dashboard with total invoiced / paid / outstanding / overdue, plus recent
+  invoices and payments
+- Light/dark mode, following system preference by default
+
+## Not implemented (by design — see the master prompt's "Future Expansion")
+
+Recurring invoices, automated reminders, multi-currency conversion,
+multi-business accounts, online payment collection (Stripe etc.), a customer
+portal, quotes/estimates, and custom invoice templates. The schema and code
+are structured so these can be added later without a rewrite — for example,
+`payments.provider` already exists as a column, ready for a real payment
+gateway to write to it after server-side verification.
+
+## Roadmap
+
+**Update 1.2 (planned):** a sister app, OrderFlow, with a shared account
+ecosystem — same login across both apps and some data shared between them.
+Not yet started; scope to be defined.
+
+## Getting started
+
+### 1. Create a Supabase project
+
+At supabase.com, create a new project, then go to **SQL Editor** and run,
+**in order**:
+
+1. `supabase/migrations/0001_init.sql`
+2. `supabase/migrations/0002_update_1.sql`
+
+Migration 2 adds the invoice accent colour column and a public `business-logos`
+storage bucket with per-owner upload policies. If you're setting up fresh,
+just run both files in order — no separate step needed.
+
+Grab your **Project URL** and **anon public key** from **Settings → API**.
+
+### 2. Create a Resend account
+
+At resend.com, verify a sending domain (or use their test domain during
+development) and create an API key.
+
+### 3. Configure environment variables
+
+    cp .env.example .env.local
+
+Fill in:
+
+- `NEXT_PUBLIC_SUPABASE_URL` / `NEXT_PUBLIC_SUPABASE_ANON_KEY` — from step 1
+- `NEXT_PUBLIC_SITE_URL` — `http://localhost:3000` locally, your real domain
+  in production (used to build the public invoice link and in emails)
+- `RESEND_API_KEY` / `RESEND_FROM_EMAIL` — from step 2
+
+### 4. Install and run
+
+    npm install
+    npm run dev
+
+Visit `http://localhost:3000`, sign up, and you're in.
+
+### 5. Deploy
+
+Push to GitHub and import the repo in Vercel. Add the same environment
+variables from `.env.local` in the Vercel project settings, and set
+`NEXT_PUBLIC_SITE_URL` to your production URL.
+
+## Project structure
+
+    app/
+      (auth)/            Sign up, log in, password reset
+      (dashboard)/       Everything behind login: dashboard, customers, invoices, settings
+      i/[token]/         Public, unauthenticated invoice view
+      api/               PDF generation routes
+    actions/             Server actions (auth, business, customers, invoices, payments, email)
+    components/          Shared UI: forms, status badges, buttons
+    lib/
+      supabase/          Browser/server/middleware Supabase clients
+      pdf/               React-pdf invoice document
+      business.ts        Fetches (and lazily creates) the current user's business
+      invoice-calculations.ts  Shared subtotal/discount/tax/total math
+      invoice-status.ts  Derives "overdue" without a background job
+      validations.ts     Zod schemas
+    supabase/migrations/ SQL schema + RLS policies
+
+## Notes on a few design decisions
+
+- **One business per user for now.** The `businesses` table has a unique
+  `owner_id`, matching the MVP scope. Moving to multiple businesses per user
+  later just means dropping that constraint and adding a business switcher.
+- **Overdue is computed, not stored.** An invoice displays as "overdue" when
+  it's `sent`/`viewed` and past its due date, computed at read time
+  (`lib/invoice-status.ts`). No cron job required for the MVP.
+- **Invoice line items are copied at creation time.** They don't reference a
+  live product catalog, so past invoices never change if you update a price
+  elsewhere.
+- **Editing is limited to drafts.** Once an invoice is sent, its numbers are
+  what the customer already has; further changes go through recording a
+  payment, cancelling, or creating a new invoice (e.g. via "Duplicate").

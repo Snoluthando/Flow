@@ -1,60 +1,43 @@
 import Link from "next/link";
+import { FileText, Wallet, Clock, AlertCircle } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { requireBusiness } from "@/lib/business";
 import { StatusBadge } from "@/components/StatusBadge";
+import { HeroBanner } from "@/components/dashboard/HeroBanner";
+import { PeriodFilter } from "@/components/dashboard/PeriodFilter";
+import { KpiCard } from "@/components/dashboard/KpiCard";
+import { RevenueChart } from "@/components/dashboard/RevenueChart";
+import { StatusDonut } from "@/components/dashboard/StatusDonut";
 import { formatMoney } from "@/lib/invoice-calculations";
-import { getEffectiveStatus, type StoredStatus } from "@/lib/invoice-status";
+import { getEffectiveStatus } from "@/lib/invoice-status";
+import { buildDashboard, pctChange, resolveRange, type DashInvoice, type DashPayment } from "@/lib/dashboard";
 
-export default async function DashboardPage() {
+export default async function DashboardPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ range?: string; from?: string; to?: string }>;
+}) {
+  const params = await searchParams;
   const business = await requireBusiness();
   const supabase = await createClient();
 
-  const { data } = await supabase
-    .from("invoices")
-    .select("id, invoice_number, status, total, amount_paid, currency, due_date, issue_date, customers(name)")
-    .eq("business_id", business.id)
-    .order("issue_date", { ascending: false });
+  const [invoicesRes, paymentsRes, recentPaymentsRes] = await Promise.all([
+    supabase
+      .from("invoices")
+      .select("id, invoice_number, status, total, amount_paid, currency, due_date, issue_date, customers(name)")
+      .eq("business_id", business.id)
+      .order("issue_date", { ascending: false }),
+    supabase.from("payments").select("amount, paid_at").eq("business_id", business.id),
+    supabase
+      .from("payments")
+      .select("id, amount, paid_at, invoices(invoice_number, currency, customers(name))")
+      .eq("business_id", business.id)
+      .order("paid_at", { ascending: false })
+      .limit(6),
+  ]);
 
-  type Row = {
-    id: string;
-    invoice_number: string;
-    status: StoredStatus;
-    total: number;
-    amount_paid: number;
-    currency: string;
-    due_date: string | null;
-    issue_date: string;
-    customers: { name: string } | { name: string }[] | null;
-  };
-  const invoices = (data ?? []) as Row[];
-
-  const currency = business.default_currency;
-  let totalInvoiced = 0;
-  let totalPaid = 0;
-  let totalOutstanding = 0;
-  let overdueAmount = 0;
-
-  for (const inv of invoices) {
-    if (inv.status === "cancelled") continue;
-    totalInvoiced += Number(inv.total);
-    totalPaid += Number(inv.amount_paid);
-    const outstanding = Number(inv.total) - Number(inv.amount_paid);
-    if (outstanding > 0) {
-      totalOutstanding += outstanding;
-      if (getEffectiveStatus(inv.status, inv.due_date, inv.amount_paid, inv.total) === "overdue") {
-        overdueAmount += outstanding;
-      }
-    }
-  }
-
-  const recentInvoices = invoices.slice(0, 6);
-
-  const { data: recentPaymentsRaw } = await supabase
-    .from("payments")
-    .select("id, amount, paid_at, invoices(invoice_number, currency, customers(name))")
-    .eq("business_id", business.id)
-    .order("paid_at", { ascending: false })
-    .limit(6);
+  const invoices = (invoicesRes.data ?? []) as DashInvoice[];
+  const payments = (paymentsRes.data ?? []) as DashPayment[];
 
   type PaymentRow = {
     id: string;
@@ -65,66 +48,116 @@ export default async function DashboardPage() {
       | { invoice_number: string; currency: string; customers: { name: string } | { name: string }[] | null }[]
       | null;
   };
-  const recentPayments = (recentPaymentsRaw ?? []) as PaymentRow[];
+  const recentPayments = (recentPaymentsRes.data ?? []) as PaymentRow[];
+
+  const currency = business.default_currency;
+  const range = resolveRange(params);
+  const d = buildDashboard(invoices, payments, range);
+  const recentInvoices = invoices.slice(0, 6);
 
   return (
-    <div>
-      <h1 className="text-2xl font-medium">Dashboard</h1>
-      <p className="mt-1 text-sm text-ink-soft">A quick look at where things stand.</p>
+    <div className="space-y-6">
+      <HeroBanner businessName={business.name} topCustomers={d.topCustomers} />
 
-      <div className="mt-6 grid sm:grid-cols-4 gap-4">
-        <StatCard label="Total invoiced" value={formatMoney(totalInvoiced, currency)} />
-        <StatCard label="Total paid" value={formatMoney(totalPaid, currency)} accent />
-        <StatCard label="Outstanding" value={formatMoney(totalOutstanding, currency)} />
-        <StatCard label="Overdue" value={formatMoney(overdueAmount, currency)} warn={overdueAmount > 0} />
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <h2 className="text-2xl font-medium">Dashboard</h2>
+          <p className="mt-1 text-sm text-muted">{business.name}</p>
+        </div>
+        <PeriodFilter range={range} />
       </div>
 
-      <div className="mt-10 grid lg:grid-cols-2 gap-8">
-        <div>
-          <div className="flex items-center justify-between mb-3">
-            <h2 className="text-sm font-medium">Recent invoices</h2>
-            <Link href="/invoices" className="text-sm text-accent hover:underline">
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <KpiCard
+          tone="invoiced"
+          label="Total invoiced"
+          icon={FileText}
+          value={formatMoney(d.invoiced.value, currency)}
+          deltaPct={pctChange(d.invoiced.value, d.invoiced.prev)}
+          series={d.invoiced.series}
+        />
+        <KpiCard
+          tone="collected"
+          label="Collected"
+          icon={Wallet}
+          value={formatMoney(d.collected.value, currency)}
+          deltaPct={pctChange(d.collected.value, d.collected.prev)}
+          series={d.collected.series}
+        />
+        <KpiCard
+          tone="outstanding"
+          label="Outstanding"
+          icon={Clock}
+          value={formatMoney(d.outstanding.value, currency)}
+          note={`${d.outstanding.count} open ${d.outstanding.count === 1 ? "invoice" : "invoices"} · all time`}
+          href="/invoices"
+        />
+        <KpiCard
+          tone="overdue"
+          label="Overdue"
+          icon={AlertCircle}
+          value={formatMoney(d.overdue.value, currency)}
+          note={`${d.overdue.count} overdue ${d.overdue.count === 1 ? "invoice" : "invoices"} · all time`}
+          href="/invoices"
+        />
+      </div>
+
+      <div className="grid gap-4 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
+        <RevenueChart
+          months={d.months}
+          peak={d.peak}
+          avg={d.avg}
+          currency={currency}
+          invoicedValue={d.invoiced.value}
+          invoicedPrev={d.invoiced.prev}
+        />
+        <StatusDonut rows={d.status} total={d.statusTotal} currency={currency} />
+      </div>
+
+      <div className="grid gap-4 lg:grid-cols-2">
+        <section className="rounded-card border border-dash-line bg-dash-card p-5 shadow-dash">
+          <div className="mb-3 flex items-center justify-between">
+            <h2 className="text-lg font-medium">Recent invoices</h2>
+            <Link href="/invoices" className="text-sm text-link hover:underline">
               View all
             </Link>
           </div>
-          <div className="border border-border rounded-sm bg-surface divide-y divide-border">
+          <div className="divide-y divide-line">
             {recentInvoices.length > 0 ? (
               recentInvoices.map((inv) => (
                 <Link
                   key={inv.id}
                   href={`/invoices/${inv.id}`}
-                  className="flex items-center justify-between px-4 py-3 hover:bg-paper transition-colors text-sm"
+                  className="-mx-2 flex items-center justify-between rounded-lg px-2 py-3 text-sm transition-colors hover:bg-row-hover"
                 >
                   <div>
                     <p className="font-medium">{inv.invoice_number}</p>
-                    <p className="text-xs text-ink-soft">
+                    <p className="text-xs text-muted">
                       {Array.isArray(inv.customers) ? inv.customers[0]?.name : inv.customers?.name}
                     </p>
                   </div>
                   <div className="flex items-center gap-3">
                     <StatusBadge status={getEffectiveStatus(inv.status, inv.due_date, inv.amount_paid, inv.total)} />
-                    <span className="tabular-nums w-20 text-right">
-                      {formatMoney(inv.total, inv.currency)}
-                    </span>
+                    <span className="w-24 text-right tabular-nums">{formatMoney(inv.total, inv.currency)}</span>
                   </div>
                 </Link>
               ))
             ) : (
-              <div className="px-4 py-8 text-center text-sm text-ink-soft">
+              <div className="py-8 text-center text-sm text-muted">
                 No invoices yet.{" "}
-                <Link href="/invoices/new" className="text-accent hover:underline">
+                <Link href="/invoices/new" className="text-link hover:underline">
                   Create your first one
                 </Link>
                 .
               </div>
             )}
           </div>
-        </div>
+        </section>
 
-        <div>
-          <h2 className="text-sm font-medium mb-3">Recent payments</h2>
-          <div className="border border-border rounded-sm bg-surface divide-y divide-border">
-            {recentPayments && recentPayments.length > 0 ? (
+        <section className="rounded-card border border-dash-line bg-dash-card p-5 shadow-dash">
+          <h2 className="mb-3 text-lg font-medium">Recent payments</h2>
+          <div className="divide-y divide-line">
+            {recentPayments.length > 0 ? (
               recentPayments.map((p) => {
                 const inv = Array.isArray(p.invoices) ? p.invoices[0] : p.invoices;
                 const customer = inv?.customers
@@ -133,49 +166,24 @@ export default async function DashboardPage() {
                     : inv.customers?.name
                   : null;
                 return (
-                  <div key={p.id} className="flex items-center justify-between px-4 py-3 text-sm">
+                  <div key={p.id} className="flex items-center justify-between py-3 text-sm">
                     <div>
                       <p className="font-medium">{inv?.invoice_number}</p>
-                      <p className="text-xs text-ink-soft">{customer}</p>
+                      <p className="text-xs text-muted">{customer}</p>
                     </div>
                     <div className="text-right">
                       <p className="tabular-nums">{formatMoney(p.amount, inv?.currency ?? currency)}</p>
-                      <p className="text-xs text-ink-soft">{p.paid_at}</p>
+                      <p className="text-xs text-muted">{p.paid_at}</p>
                     </div>
                   </div>
                 );
               })
             ) : (
-              <div className="px-4 py-8 text-center text-sm text-ink-soft">No payments recorded yet.</div>
+              <div className="py-8 text-center text-sm text-muted">No payments recorded yet.</div>
             )}
           </div>
-        </div>
+        </section>
       </div>
-    </div>
-  );
-}
-
-function StatCard({
-  label,
-  value,
-  accent,
-  warn,
-}: {
-  label: string;
-  value: string;
-  accent?: boolean;
-  warn?: boolean;
-}) {
-  return (
-    <div className="border border-border rounded-sm bg-surface p-4">
-      <p className="text-xs text-ink-soft">{label}</p>
-      <p
-        className={`mt-1 text-xl font-serif-display tabular-nums ${
-          warn ? "text-danger" : accent ? "text-accent" : ""
-        }`}
-      >
-        {value}
-      </p>
     </div>
   );
 }

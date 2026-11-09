@@ -38,7 +38,7 @@ export default async function EditInvoicePage({
 
   return (
     <div>
-      <Link href={`/invoices/${id}`} className="text-sm text-ink-soft hover:text-ink">
+      <Link href={`/invoices/${id}`} className="text-sm text-muted hover:text-body">
         ← {invoice.invoice_number}
       </Link>
       <h1 className="mt-2 text-2xl font-medium">Edit invoice</h1>

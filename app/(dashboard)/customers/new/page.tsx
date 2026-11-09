@@ -5,7 +5,7 @@ import { CustomerForm } from "@/components/CustomerForm";
 export default function NewCustomerPage() {
   return (
     <div>
-      <Link href="/customers" className="text-sm text-ink-soft hover:text-ink">
+      <Link href="/customers" className="text-sm text-muted hover:text-body">
         ← Customers
       </Link>
       <h1 className="mt-2 text-2xl font-medium">Add customer</h1>

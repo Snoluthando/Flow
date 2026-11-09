@@ -15,12 +15,12 @@ export default function ResetPasswordPage() {
           InvoiceFlow
         </Link>
         <h1 className="mt-6 text-2xl font-medium">Reset your password</h1>
-        <p className="mt-1 text-sm text-ink-soft">
+        <p className="mt-1 text-sm text-muted">
           We&apos;ll email you a link to choose a new one.
         </p>
 
         {state && !state.error ? (
-          <p className="mt-6 text-sm bg-accent-soft text-ink rounded-sm px-3 py-3">
+          <p className="mt-6 text-sm bg-success-bg text-body rounded-sm px-3 py-3">
             If an account exists for that email, a reset link is on its way.
           </p>
         ) : (
@@ -34,12 +34,12 @@ export default function ResetPasswordPage() {
                 name="email"
                 type="email"
                 required
-                className="w-full border border-border rounded-sm px-3 py-2.5 bg-surface focus:border-accent"
+                className="w-full border border-input-line rounded-sm px-3 py-2.5 bg-input focus:border-input-focus"
               />
             </div>
 
             {state?.error && (
-              <p className="text-sm text-danger bg-danger-soft rounded-sm px-3 py-2">
+              <p className="text-sm text-error bg-error-bg rounded-sm px-3 py-2">
                 {state.error}
               </p>
             )}
@@ -50,8 +50,8 @@ export default function ResetPasswordPage() {
           </form>
         )}
 
-        <p className="mt-6 text-sm text-ink-soft">
-          <Link href="/login" className="text-accent hover:underline">
+        <p className="mt-6 text-sm text-muted">
+          <Link href="/login" className="text-link hover:underline">
             Back to log in
           </Link>
         </p>

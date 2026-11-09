@@ -14,7 +14,7 @@ export function NewInvoiceFab() {
       href="/invoices/new"
       aria-label="New invoice"
       title="New invoice"
-      className="fixed bottom-6 right-6 h-12 w-12 rounded-full bg-accent text-white flex items-center justify-center shadow-lg hover:opacity-90 transition-opacity z-40"
+      className="fixed bottom-6 right-6 lg:hidden h-12 w-12 rounded-full bg-fab text-fab-text flex items-center justify-center shadow-lg hover:opacity-90 transition-opacity z-40"
     >
       <Plus size={22} />
     </Link>

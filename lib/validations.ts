@@ -14,7 +14,7 @@ export const businessSchema = z.object({
   invoice_prefix: z.string().max(20).default("INV-"),
   invoice_accent_color: z
     .string()
-    .regex(/^#[0-9a-fA-F]{6}$/, "Enter a valid hex color")
+    .regex(/^#[0-9a-fA-F]{6}$/, "Use a hex colour like #2f6f5e")
     .default("#2f6f5e"),
 });
 

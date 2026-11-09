@@ -1,53 +1,456 @@
 @import "tailwindcss";
 
+/* ==========================================================================
+   InvoiceFlow theme — three layers
+   --------------------------------------------------------------------------
+   1. PALETTE    raw colours, no meaning. Never used in components.
+   2. SEMANTIC   what a colour is *for* (page, card, text, border, action…).
+                 Light values live in :root, dark values in .dark.
+   3. COMPONENT  one token per UI part (sidebar, buttons, inputs, badges…).
+                 Each defaults to a semantic token. To restyle ONE part,
+                 change only its line here (in :root and/or .dark).
+   ========================================================================== */
+
 :root {
-  --color-paper: #eff0f2;
-  --color-surface: #0a1b3c;
-  --color-ink: #ffffff;
-  --color-ink-soft: #afb0b3;
-  --color-border: #e2e0d8;
-  --color-accent: #2f8870;
-  --color-accent-soft: #142956;
-  --color-danger: #b3261e;
-  --color-danger-soft: #fbeae9;
-  --color-amber: #92650f;
-  --color-amber-soft: #faf1de;
+  /* ---- 1. PALETTE ------------------------------------------------------ */
+  --stone-50: #f6f5f2;
+  --stone-200: #e2e0d8;
+  --white: #ffffff;
+
+  --navy-950: #10151f;
+  --navy-900: #17233b;
+  --navy-850: #171e2b;
+  --navy-700: #2b3446;
+  --slate-600: #4a5468;
+  --slate-400: #97a0b3;
+  --slate-100: #e7e9ee;
+
+  --green-700: #2f6f5e;
+  --green-500: #4a9382;
+  --green-800: #265a4c;
+  --green-100: #e7efec;
+  --green-950: #1b2c28;
+
+  --blue-600: #3a5ba0;
+  --blue-400: #7c9ae0;
+
+  --red-700: #b3261e;
+  --red-400: #e0776d;
+  --red-50: #fbeae9;
+  --red-950: #3a1f1c;
+
+  --amber-700: #92650f;
+  --amber-400: #d9a94b;
+  --amber-50: #faf1de;
+  --amber-950: #362a13;
+
+  /* ---- 2. SEMANTIC (light) --------------------------------------------- */
+  --bg-page: var(--stone-50);
+  --bg-card: var(--white);
+  --bg-subtle: var(--stone-50);
+
+  --fg: var(--navy-900);
+  --fg-muted: var(--slate-600);
+  --fg-on-brand: var(--white);
+
+  --line: var(--stone-200);
+  --line-strong: var(--navy-900);
+
+  --brand: var(--green-700);
+  --brand-soft: var(--green-100);
+  --on-brand-soft: var(--green-700);
+
+  --danger: var(--red-700);
+  --danger-soft: var(--red-50);
+  --warning: var(--amber-700);
+  --warning-soft: var(--amber-50);
+
+  /* ---- 3. COMPONENT ---------------------------------------------------- */
+  /* page + cards */
+  --page-bg: var(--bg-page);
+  --section-bg: var(--bg-card);
+  --card-bg: var(--bg-card);
+  --card-border: var(--line);
+  --row-hover-bg: var(--bg-page);
+  --divider: var(--line);
+  --table-line: var(--line);
+
+  /* text */
+  --text-body: var(--fg);
+  --text-muted: var(--fg-muted);
+  --text-link: var(--brand);
+  --text-danger: var(--danger);
+
+  /* navigation card — fully independent of page/dashboard cards.
+     Values come straight from the palette, not from --bg-card / --line. */
+  --sidebar-bg: var(--white);
+  --sidebar-border: var(--stone-200);
+  --sidebar-shadow: 0 1px 2px rgb(23 35 59 / 0.04), 0 10px 30px rgb(23 35 59 / 0.07);
+  --sidebar-brand: var(--navy-900);
+  --sidebar-meta: var(--slate-600);
+  --sidebar-section-label: var(--slate-400);
+  --sidebar-user-bg: var(--stone-50);
+  --sidebar-avatar-bg: var(--green-100);
+  --sidebar-avatar-text: var(--green-700);
+  --nav-text: var(--slate-600);
+  --nav-text-hover: var(--navy-900);
+  --nav-hover-bg: var(--stone-50);
+  --nav-icon: var(--slate-400);
+  --nav-active-bg: var(--green-100);
+  --nav-active-text: var(--navy-900);
+  --nav-active-icon: var(--green-700);
+  --nav-cta-bg: var(--green-700);
+  --nav-cta-text: var(--white);
+  --nav-cta-hover-bg: var(--green-800);
+
+  /* buttons */
+  --btn-bg: var(--brand);
+  --btn-text: var(--fg-on-brand);
+  --btn-solid-bg: var(--navy-900);
+  --btn-solid-text: var(--white);
+  --btn-solid-hover-bg: var(--brand);
+  --btn-outline-border: var(--line);
+  --btn-outline-border-hover: var(--line-strong);
+  --fab-bg: var(--brand);
+  --fab-text: var(--fg-on-brand);
+
+  /* filter tabs (invoice list) */
+  --tab-text: var(--fg-muted);
+  --tab-hover-bg: var(--bg-page);
+  --tab-active-bg: var(--navy-900);
+  --tab-active-text: var(--white);
+
+  /* form fields */
+  --input-bg: var(--bg-card);
+  --input-border: var(--line);
+  --input-border-focus: var(--brand);
+
+  /* notices */
+  --notice-error-bg: var(--danger-soft);
+  --notice-error-text: var(--danger);
+  --notice-success-bg: var(--brand-soft);
+  --notice-success-text: var(--brand);
+
+  /* status badges */
+  --badge-draft-bg: var(--bg-subtle);
+  --badge-draft-text: var(--fg-muted);
+  --badge-draft-border: var(--line);
+  --badge-sent-bg: var(--brand-soft);
+  --badge-sent-text: var(--on-brand-soft);
+  --badge-viewed-bg: var(--brand-soft);
+  --badge-viewed-text: var(--on-brand-soft);
+  --badge-partial-bg: var(--warning-soft);
+  --badge-partial-text: var(--warning);
+  --badge-paid-bg: var(--brand);
+  --badge-paid-text: var(--fg-on-brand);
+  --badge-overdue-bg: var(--danger-soft);
+  --badge-overdue-text: var(--danger);
+  --badge-cancelled-bg: var(--bg-subtle);
+  --badge-cancelled-text: var(--fg-muted);
+
+  /* misc */
+  --logo-box-bg: var(--bg-subtle);
+  --selection-bg: var(--brand-soft);
+  --focus-ring: var(--brand);
+
+  /* dashboard — greeting banner */
+  --hero-bg: linear-gradient(120deg, var(--navy-900) 0%, #1f3a5f 48%, var(--green-700) 100%);
+  --hero-text: var(--white);
+  --hero-text-muted: rgb(255 255 255 / 0.72);
+  --hero-chip-bg: rgb(255 255 255 / 0.14);
+  --hero-chip-text: var(--white);
+  --hero-chip-hover-bg: rgb(255 255 255 / 0.24);
+
+  /* dashboard — cards (separate from page cards and the nav card) */
+  --dash-card-bg: var(--bg-card);
+  --dash-card-border: var(--line);
+  --dash-card-shadow: 0 1px 2px rgb(23 35 59 / 0.04);
+  --dash-chip-bg: var(--bg-subtle);
+  --dash-chip-text: var(--fg-muted);
+  --dash-avatar-bg: var(--green-100);
+  --dash-avatar-text: var(--green-700);
+
+  /* dashboard — stat cards */
+  --stat-icon-invoiced-bg: var(--brand-soft);
+  --stat-icon-invoiced: var(--brand);
+  --stat-icon-collected-bg: var(--brand-soft);
+  --stat-icon-collected: var(--brand);
+  --stat-icon-outstanding-bg: var(--warning-soft);
+  --stat-icon-outstanding: var(--warning);
+  --stat-icon-overdue-bg: var(--danger-soft);
+  --stat-icon-overdue: var(--danger);
+  --spark-invoiced: var(--green-700);
+  --spark-collected: var(--blue-600);
+  --delta-good: var(--green-700);
+  --delta-bad: var(--red-700);
+  --delta-neutral: var(--fg-muted);
+
+  /* dashboard — charts */
+  --chart-invoiced: var(--green-700);
+  --chart-collected: var(--navy-900);
+  --chart-grid: var(--line);
+  --chart-axis: var(--fg-muted);
+  --chart-paid: var(--green-700);
+  --chart-sent: var(--blue-600);
+  --chart-partial: var(--amber-700);
+  --chart-overdue: var(--red-700);
+  --chart-draft: var(--slate-400);
+  --chart-empty: var(--stone-200);
+
+  /* landing page — dark atmospheric theme. Always dark, independent of the app's light/dark mode. */
+  --landing-base: #050b18;
+  --landing-base-2: #0a1428;
+  --landing-text: #f5f6fa;
+  --landing-text-muted: #aab4c8;
+  --landing-accent: #80afff;
+  --landing-accent-2: #9b8bff;
+  --landing-glow: rgb(128 175 255 / 0.16);
+  --landing-divider: rgb(137 165 220 / 0.14);
+  --landing-nav-bg: rgb(5 11 24 / 0.72);
+
+  /* landing — glass cards */
+  --landing-card: rgb(18 30 53 / 0.78);
+  --landing-card-border: rgb(137 165 220 / 0.22);
+  --landing-card-border-hover: rgb(137 165 220 / 0.5);
+  --landing-card-shadow: 0 0 0 1px rgb(137 165 220 / 0.04), 0 24px 60px -24px rgb(0 0 0 / 0.65), 0 0 90px -35px rgb(128 175 255 / 0.3);
+  --landing-icon-bg: rgb(128 175 255 / 0.1);
+  --landing-icon-glow: 0 0 26px rgb(128 175 255 / 0.5);
+
+  /* landing — buttons */
+  --landing-btn-bg: #f5f6fa;
+  --landing-btn-text: #050b18;
+  --landing-btn-hover-bg: #ffffff;
+  --landing-outline: rgb(137 165 220 / 0.35);
+  --landing-outline-hover: rgb(137 165 220 / 0.65);
+
+  /* landing — mountain scene + fog (used when LandingBackground MODE is "mountains") */
+  --mtn-far-top: #15274a;
+  --mtn-far-bottom: #0a1530;
+  --mtn-mid-top: #0f1f3d;
+  --mtn-mid-bottom: #081126;
+  --mtn-near: #050b18;
+  --mtn-rim: rgb(128 175 255 / 0.15);
+  --fog-blue: rgb(96 140 230 / 0.12);
+  --fog-purple: rgb(155 139 255 / 0.1);
+  --fog-stop: #6f98e6;
+
+  /* landing — darkening layer for the video / image background modes */
+  --landing-overlay: linear-gradient(to bottom, rgb(5 11 24 / 0.5), rgb(5 11 24 / 0.8));
 }
 
 .dark {
-  --color-paper: #10151f;
-  --color-surface: #0a1b3c;
-  --color-ink: #e7e9ee;
-  --color-ink-soft: #97a0b3;
-  --color-border: #2b3446;
-  --color-accent: #4a9382;
-  --color-accent-soft: #1b2c28;
-  --color-danger: #e0776d;
-  --color-danger-soft: #3a1f1c;
-  --color-amber: #d9a94b;
-  --color-amber-soft: #362a13;
+  color-scheme: dark;
+
+  /* semantic (dark) — component tokens above follow automatically */
+  --bg-page: var(--navy-950);
+  --bg-card: var(--navy-850);
+  --bg-subtle: var(--navy-950);
+
+  --fg: var(--slate-100);
+  --fg-muted: var(--slate-400);
+  --fg-on-brand: var(--white);
+
+  --line: var(--navy-700);
+  --line-strong: var(--slate-100);
+
+  --brand: var(--green-500);
+  --brand-soft: var(--green-950);
+  --on-brand-soft: var(--green-500);
+
+  --danger: var(--red-400);
+  --danger-soft: var(--red-950);
+  --warning: var(--amber-400);
+  --warning-soft: var(--amber-950);
+
+  /* component tokens that need a different dark value */
+  --btn-solid-bg: var(--slate-100);
+  --btn-solid-text: var(--navy-950);
+  --tab-active-bg: var(--slate-100);
+  --tab-active-text: var(--navy-950);
+
+  /* navigation card (dark) */
+  --sidebar-bg: var(--navy-850);
+  --sidebar-border: var(--navy-700);
+  --sidebar-shadow: 0 10px 30px rgb(0 0 0 / 0.35);
+  --sidebar-brand: var(--slate-100);
+  --sidebar-meta: var(--slate-400);
+  --sidebar-user-bg: var(--navy-950);
+  --sidebar-avatar-bg: var(--green-950);
+  --sidebar-avatar-text: var(--green-500);
+  --nav-text: var(--slate-400);
+  --nav-text-hover: var(--slate-100);
+  --nav-hover-bg: var(--navy-950);
+  --nav-active-bg: var(--green-950);
+  --nav-active-text: var(--slate-100);
+  --nav-active-icon: var(--green-500);
+  --nav-cta-bg: var(--green-700);
+  --nav-cta-hover-bg: var(--green-500);
+
+  /* dashboard (dark) */
+  --hero-bg: linear-gradient(120deg, #0d1424 0%, #16263f 50%, #1d4a3e 100%);
+  --dash-card-shadow: none;
+  --dash-avatar-bg: var(--green-950);
+  --dash-avatar-text: var(--green-500);
+  --spark-invoiced: var(--green-500);
+  --spark-collected: var(--blue-400);
+  --delta-good: var(--green-500);
+  --delta-bad: var(--red-400);
+  --chart-invoiced: var(--green-500);
+  --chart-collected: var(--blue-400);
+  --chart-paid: var(--green-500);
+  --chart-sent: var(--blue-400);
+  --chart-partial: var(--amber-400);
+  --chart-overdue: var(--red-400);
+  --chart-empty: var(--navy-700);
 }
 
+/* Expose to Tailwind: each name becomes bg-*, text-*, border-*, etc. */
 @theme inline {
-  --color-paper: var(--color-paper);
-  --color-surface: var(--color-surface);
-  --color-ink: var(--color-ink);
-  --color-ink-soft: var(--color-ink-soft);
-  --color-border: var(--color-border);
-  --color-accent: var(--color-accent);
-  --color-accent-soft: var(--color-accent-soft);
-  --color-danger: var(--color-danger);
-  --color-danger-soft: var(--color-danger-soft);
-  --color-amber: var(--color-amber);
-  --color-amber-soft: var(--color-amber-soft);
+  --color-page: var(--page-bg);
+  --color-section: var(--section-bg);
+  --color-card: var(--card-bg);
+  --color-card-line: var(--card-border);
+  --color-row-hover: var(--row-hover-bg);
+  --color-line: var(--divider);
+  --color-table-line: var(--table-line);
+  --color-subtle: var(--logo-box-bg);
+
+  --color-body: var(--text-body);
+  --color-muted: var(--text-muted);
+  --color-link: var(--text-link);
+  --color-danger: var(--text-danger);
+
+  --color-sidebar: var(--sidebar-bg);
+  --color-sidebar-line: var(--sidebar-border);
+  --color-sidebar-brand: var(--sidebar-brand);
+  --color-sidebar-meta: var(--sidebar-meta);
+  --color-sidebar-section: var(--sidebar-section-label);
+  --color-sidebar-user: var(--sidebar-user-bg);
+  --color-sidebar-avatar: var(--sidebar-avatar-bg);
+  --color-sidebar-avatar-text: var(--sidebar-avatar-text);
+  --color-nav: var(--nav-text);
+  --color-nav-hover: var(--nav-text-hover);
+  --color-nav-hover-bg: var(--nav-hover-bg);
+  --color-nav-icon: var(--nav-icon);
+  --color-nav-active-bg: var(--nav-active-bg);
+  --color-nav-active: var(--nav-active-text);
+  --color-nav-active-icon: var(--nav-active-icon);
+  --color-nav-cta: var(--nav-cta-bg);
+  --color-nav-cta-text: var(--nav-cta-text);
+  --color-nav-cta-hover: var(--nav-cta-hover-bg);
+  --shadow-sidebar: var(--sidebar-shadow);
+  --radius-card: 1rem;
+
+  --color-btn: var(--btn-bg);
+  --color-btn-text: var(--btn-text);
+  --color-btn-solid: var(--btn-solid-bg);
+  --color-btn-solid-text: var(--btn-solid-text);
+  --color-btn-solid-hover: var(--btn-solid-hover-bg);
+  --color-btn-outline: var(--btn-outline-border);
+  --color-btn-outline-hover: var(--btn-outline-border-hover);
+  --color-fab: var(--fab-bg);
+  --color-fab-text: var(--fab-text);
+
+  --color-tab: var(--tab-text);
+  --color-tab-hover-bg: var(--tab-hover-bg);
+  --color-tab-active-bg: var(--tab-active-bg);
+  --color-tab-active: var(--tab-active-text);
+
+  --color-input: var(--input-bg);
+  --color-input-line: var(--input-border);
+  --color-input-focus: var(--input-border-focus);
+
+  --color-error-bg: var(--notice-error-bg);
+  --color-error: var(--notice-error-text);
+  --color-success-bg: var(--notice-success-bg);
+  --color-success: var(--notice-success-text);
+
+  --color-badge-draft-bg: var(--badge-draft-bg);
+  --color-badge-draft: var(--badge-draft-text);
+  --color-badge-draft-line: var(--badge-draft-border);
+  --color-badge-sent-bg: var(--badge-sent-bg);
+  --color-badge-sent: var(--badge-sent-text);
+  --color-badge-viewed-bg: var(--badge-viewed-bg);
+  --color-badge-viewed: var(--badge-viewed-text);
+  --color-badge-partial-bg: var(--badge-partial-bg);
+  --color-badge-partial: var(--badge-partial-text);
+  --color-badge-paid-bg: var(--badge-paid-bg);
+  --color-badge-paid: var(--badge-paid-text);
+  --color-badge-overdue-bg: var(--badge-overdue-bg);
+  --color-badge-overdue: var(--badge-overdue-text);
+  --color-badge-cancelled-bg: var(--badge-cancelled-bg);
+  --color-badge-cancelled: var(--badge-cancelled-text);
+
+  --color-hero-text: var(--hero-text);
+  --color-hero-muted: var(--hero-text-muted);
+  --color-hero-chip: var(--hero-chip-bg);
+  --color-hero-chip-text: var(--hero-chip-text);
+  --color-hero-chip-hover: var(--hero-chip-hover-bg);
+
+  --color-dash-card: var(--dash-card-bg);
+  --color-dash-line: var(--dash-card-border);
+  --color-dash-chip: var(--dash-chip-bg);
+  --color-dash-chip-text: var(--dash-chip-text);
+  --color-dash-avatar: var(--dash-avatar-bg);
+  --color-dash-avatar-text: var(--dash-avatar-text);
+  --shadow-dash: var(--dash-card-shadow);
+
+  --color-stat-invoiced-bg: var(--stat-icon-invoiced-bg);
+  --color-stat-invoiced: var(--stat-icon-invoiced);
+  --color-stat-collected-bg: var(--stat-icon-collected-bg);
+  --color-stat-collected: var(--stat-icon-collected);
+  --color-stat-outstanding-bg: var(--stat-icon-outstanding-bg);
+  --color-stat-outstanding: var(--stat-icon-outstanding);
+  --color-stat-overdue-bg: var(--stat-icon-overdue-bg);
+  --color-stat-overdue: var(--stat-icon-overdue);
+  --color-spark-invoiced: var(--spark-invoiced);
+  --color-spark-collected: var(--spark-collected);
+  --color-delta-good: var(--delta-good);
+  --color-delta-bad: var(--delta-bad);
+  --color-delta-neutral: var(--delta-neutral);
+
+  --color-chart-invoiced: var(--chart-invoiced);
+  --color-chart-collected: var(--chart-collected);
+  --color-chart-grid: var(--chart-grid);
+  --color-chart-axis: var(--chart-axis);
+  --color-chart-paid: var(--chart-paid);
+  --color-chart-sent: var(--chart-sent);
+  --color-chart-partial: var(--chart-partial);
+  --color-chart-overdue: var(--chart-overdue);
+  --color-chart-draft: var(--chart-draft);
+  --color-chart-empty: var(--chart-empty);
+
+  --color-landing-base: var(--landing-base);
+  --color-landing-base-2: var(--landing-base-2);
+  --color-landing: var(--landing-text);
+  --color-landing-muted: var(--landing-text-muted);
+  --color-landing-accent: var(--landing-accent);
+  --color-landing-accent-2: var(--landing-accent-2);
+  --color-landing-divider: var(--landing-divider);
+  --color-landing-nav: var(--landing-nav-bg);
+  --color-landing-card: var(--landing-card);
+  --color-landing-card-line: var(--landing-card-border);
+  --color-landing-card-line-hover: var(--landing-card-border-hover);
+  --color-landing-icon: var(--landing-icon-bg);
+  --color-landing-btn: var(--landing-btn-bg);
+  --color-landing-btn-text: var(--landing-btn-text);
+  --color-landing-btn-hover: var(--landing-btn-hover-bg);
+  --color-landing-outline: var(--landing-outline);
+  --color-landing-outline-hover: var(--landing-outline-hover);
+  --shadow-landing-card: var(--landing-card-shadow);
+  --shadow-landing-icon: var(--landing-icon-glow);
+  --font-landing-serif: "Playfair Display Variable", Georgia, "Iowan Old Style", "Palatino Linotype", serif;
+  --font-landing-sans: "Inter Variable", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+
   --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
   --font-serif: Georgia, "Iowan Old Style", "Palatino Linotype", serif;
 }
 
 body {
-  background: var(--color-paper);
-  color: var(--color-ink);
+  background: var(--page-bg);
+  color: var(--text-body);
   font-family: var(--font-sans);
+  transition: background-color 150ms ease, color 150ms ease;
 }
 
 .font-serif-display {
@@ -59,19 +462,21 @@ body {
 }
 
 ::selection {
-  background: var(--color-accent-soft);
-  color: var(--color-ink);
+  background: var(--selection-bg);
+  color: var(--text-body);
 }
 
 :focus-visible {
-  outline: 2px solid var(--color-accent);
+  outline: 2px solid var(--focus-ring);
   outline-offset: 2px;
 }
 
-.dark {
-  color-scheme: dark;
+/* landing page: slow drifting fog + smooth anchor scrolling (both off for reduced motion) */
+@keyframes landing-fog {
+  from { transform: translate3d(-3%, 0, 0); }
+  to { transform: translate3d(3%, -2%, 0); }
 }
-
-body {
-  transition: background-color 150ms ease, color 150ms ease;
+@media (prefers-reduced-motion: no-preference) {
+  .landing-fog { animation: landing-fog 45s ease-in-out infinite alternate; }
+  html:has([data-landing]) { scroll-behavior: smooth; }
 }

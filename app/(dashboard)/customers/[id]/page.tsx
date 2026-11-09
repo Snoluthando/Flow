@@ -36,7 +36,7 @@ export default async function CustomerDetailPage({
 
   return (
     <div>
-      <Link href="/customers" className="text-sm text-ink-soft hover:text-ink">
+      <Link href="/customers" className="text-sm text-muted hover:text-body">
         ← Customers
       </Link>
       <div className="mt-2 flex items-center justify-between">
@@ -59,18 +59,18 @@ export default async function CustomerDetailPage({
             <h2 className="text-sm font-medium">Invoices</h2>
             <Link
               href={`/invoices/new?customer=${customer.id}`}
-              className="text-sm text-accent hover:underline"
+              className="text-sm text-link hover:underline"
             >
               New invoice
             </Link>
           </div>
-          <div className="border border-border rounded-sm bg-surface divide-y divide-border">
+          <div className="border border-card-line rounded-sm bg-card divide-y divide-line">
             {invoices && invoices.length > 0 ? (
               invoices.map((inv) => (
                 <Link
                   key={inv.id}
                   href={`/invoices/${inv.id}`}
-                  className="flex items-center justify-between px-4 py-3 hover:bg-paper transition-colors"
+                  className="flex items-center justify-between px-4 py-3 hover:bg-row-hover transition-colors"
                 >
                   <div>
                     <p className="text-sm font-medium">{inv.invoice_number}</p>
@@ -80,7 +80,7 @@ export default async function CustomerDetailPage({
                 </Link>
               ))
             ) : (
-              <div className="px-4 py-8 text-center text-sm text-ink-soft">
+              <div className="px-4 py-8 text-center text-sm text-muted">
                 No invoices for this customer yet.
               </div>
             )}

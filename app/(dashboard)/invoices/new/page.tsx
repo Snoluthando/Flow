@@ -23,17 +23,17 @@ export default async function NewInvoicePage({
   if (!customers || customers.length === 0) {
     return (
       <div>
-        <Link href="/invoices" className="text-sm text-ink-soft hover:text-ink">
+        <Link href="/invoices" className="text-sm text-muted hover:text-body">
           ← Invoices
         </Link>
         <h1 className="mt-2 text-2xl font-medium">New invoice</h1>
-        <div className="mt-6 border border-border rounded-sm bg-surface p-6 max-w-md">
-          <p className="text-sm text-ink-soft">
+        <div className="mt-6 border border-card-line rounded-sm bg-card p-6 max-w-md">
+          <p className="text-sm text-muted">
             You&apos;ll need at least one customer before you can create an invoice.
           </p>
           <Link
             href="/customers/new"
-            className="mt-4 inline-block bg-accent text-white px-4 py-2 rounded-sm text-sm hover:opacity-90"
+            className="mt-4 inline-block bg-btn text-btn-text px-4 py-2 rounded-sm text-sm hover:opacity-90"
           >
             Add a customer
           </Link>
@@ -44,11 +44,11 @@ export default async function NewInvoicePage({
 
   return (
     <div>
-      <Link href="/invoices" className="text-sm text-ink-soft hover:text-ink">
+      <Link href="/invoices" className="text-sm text-muted hover:text-body">
         ← Invoices
       </Link>
       <h1 className="mt-2 text-2xl font-medium">New invoice</h1>
-      <p className="mt-1 text-sm text-ink-soft">
+      <p className="mt-1 text-sm text-muted">
         Saves as a draft — you can review and send it from the invoice page.
       </p>
 

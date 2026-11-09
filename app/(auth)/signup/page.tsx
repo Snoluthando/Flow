@@ -15,7 +15,7 @@ export default function SignupPage() {
           InvoiceFlow
         </Link>
         <h1 className="mt-6 text-2xl font-medium">Create your account</h1>
-        <p className="mt-1 text-sm text-ink-soft">Start invoicing in a couple of minutes.</p>
+        <p className="mt-1 text-sm text-muted">Start invoicing in a couple of minutes.</p>
 
         <form action={formAction} className="mt-6 space-y-4">
           <div>
@@ -27,7 +27,7 @@ export default function SignupPage() {
               name="fullName"
               type="text"
               required
-              className="w-full border border-border rounded-sm px-3 py-2.5 bg-surface focus:border-accent"
+              className="w-full border border-input-line rounded-sm px-3 py-2.5 bg-input focus:border-input-focus"
             />
           </div>
           <div>
@@ -39,7 +39,7 @@ export default function SignupPage() {
               name="email"
               type="email"
               required
-              className="w-full border border-border rounded-sm px-3 py-2.5 bg-surface focus:border-accent"
+              className="w-full border border-input-line rounded-sm px-3 py-2.5 bg-input focus:border-input-focus"
             />
           </div>
           <div>
@@ -52,13 +52,13 @@ export default function SignupPage() {
               type="password"
               required
               minLength={8}
-              className="w-full border border-border rounded-sm px-3 py-2.5 bg-surface focus:border-accent"
+              className="w-full border border-input-line rounded-sm px-3 py-2.5 bg-input focus:border-input-focus"
             />
-            <p className="mt-1 text-xs text-ink-soft">At least 8 characters.</p>
+            <p className="mt-1 text-xs text-muted">At least 8 characters.</p>
           </div>
 
           {state?.error && (
-            <p className="text-sm text-danger bg-danger-soft rounded-sm px-3 py-2">{state.error}</p>
+            <p className="text-sm text-error bg-error-bg rounded-sm px-3 py-2">{state.error}</p>
           )}
 
           <SubmitButton pendingText="Creating account…" className="w-full">
@@ -66,9 +66,9 @@ export default function SignupPage() {
           </SubmitButton>
         </form>
 
-        <p className="mt-6 text-sm text-ink-soft">
+        <p className="mt-6 text-sm text-muted">
           Already have an account?{" "}
-          <Link href="/login" className="text-accent hover:underline">
+          <Link href="/login" className="text-link hover:underline">
             Log in
           </Link>
         </p>

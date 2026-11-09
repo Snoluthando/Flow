@@ -8,12 +8,7 @@ import { businessSchema } from "@/lib/validations";
 export type FormState = { error?: string; success?: boolean } | null;
 
 const MAX_LOGO_BYTES = 2 * 1024 * 1024; // 2MB
-const ALLOWED_LOGO_TYPES: Record<string, string> = {
-  "image/png": "png",
-  "image/jpeg": "jpg",
-  "image/webp": "webp",
-  "image/svg+xml": "svg",
-};
+const ALLOWED_LOGO_TYPES = ["image/png", "image/jpeg", "image/webp", "image/svg+xml"];
 
 export async function updateBusiness(_prev: FormState, formData: FormData): Promise<FormState> {
   const business = await requireBusiness();
@@ -38,59 +33,38 @@ export async function updateBusiness(_prev: FormState, formData: FormData): Prom
   }
 
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const update: Record<string, unknown> = { ...parsed.data };
 
-  if (!user) {
-    return { error: "Your session has expired. Please log in again." };
-  }
-
-  const updateData: Record<string, unknown> = { ...parsed.data };
-
-  const removeLogo = formData.get("remove_logo") === "1";
   const logoFile = formData.get("logo");
+  const removeLogo = formData.get("remove_logo") === "1";
 
-  if (removeLogo && business.logo_url) {
-    const existingPath = extractStoragePath(business.logo_url, user.id);
-    if (existingPath) {
-      await supabase.storage.from("business-logos").remove([existingPath]);
-    }
-    updateData.logo_url = null;
+  if (removeLogo) {
+    update.logo_url = null;
   } else if (logoFile instanceof File && logoFile.size > 0) {
     if (logoFile.size > MAX_LOGO_BYTES) {
       return { error: "Logo must be smaller than 2MB." };
     }
-    const ext = ALLOWED_LOGO_TYPES[logoFile.type];
-    if (!ext) {
-      return { error: "Logo must be a PNG, JPEG, WebP or SVG file." };
+    if (!ALLOWED_LOGO_TYPES.includes(logoFile.type)) {
+      return { error: "Logo must be a PNG, JPEG, WebP or SVG image." };
     }
 
-    // Clear any previous logo first (extension may differ from the new one,
-    // and we don't want orphaned files accumulating in the bucket).
-    const { data: existingFiles } = await supabase.storage.from("business-logos").list(user.id);
-    if (existingFiles?.length) {
-      await supabase.storage
-        .from("business-logos")
-        .remove(existingFiles.map((f) => `${user.id}/${f.name}`));
-    }
+    const extension = logoFile.name.split(".").pop() || "png";
+    const path = `${business.owner_id}/logo.${extension}`;
 
-    // Timestamped filename so the public URL changes and browsers/CDNs
-    // don't serve a stale cached logo after an update.
-    const path = `${user.id}/logo-${Date.now()}.${ext}`;
     const { error: uploadError } = await supabase.storage
       .from("business-logos")
-      .upload(path, logoFile, { contentType: logoFile.type });
+      .upload(path, logoFile, { upsert: true, contentType: logoFile.type });
 
     if (uploadError) {
-      return { error: "We couldn't upload your logo. Please try again." };
+      return { error: `We couldn't upload your logo: ${uploadError.message}` };
     }
 
     const { data: publicUrlData } = supabase.storage.from("business-logos").getPublicUrl(path);
-    updateData.logo_url = publicUrlData.publicUrl;
+    // Cache-bust so the new logo shows immediately instead of a stale CDN copy.
+    update.logo_url = `${publicUrlData.publicUrl}?v=${Date.now()}`;
   }
 
-  const { error } = await supabase.from("businesses").update(updateData).eq("id", business.id);
+  const { error } = await supabase.from("businesses").update(update).eq("id", business.id);
 
   if (error) {
     return { error: "We couldn't save your business settings. Please try again." };
@@ -99,12 +73,4 @@ export async function updateBusiness(_prev: FormState, formData: FormData): Prom
   revalidatePath("/settings");
   revalidatePath("/dashboard");
   return { success: true };
-}
-
-function extractStoragePath(publicUrl: string, ownerId: string): string | null {
-  const marker = "/business-logos/";
-  const idx = publicUrl.indexOf(marker);
-  if (idx === -1) return null;
-  const path = publicUrl.slice(idx + marker.length);
-  return path.startsWith(`${ownerId}/`) ? path : null;
 }

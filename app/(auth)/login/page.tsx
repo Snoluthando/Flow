@@ -26,7 +26,7 @@ function LoginForm() {
           InvoiceFlow
         </Link>
         <h1 className="mt-6 text-2xl font-medium">Log in</h1>
-        <p className="mt-1 text-sm text-ink-soft">Welcome back.</p>
+        <p className="mt-1 text-sm text-muted">Welcome back.</p>
 
         <form action={formAction} className="mt-6 space-y-4">
           <input type="hidden" name="redirectTo" value={redirectTo} />
@@ -39,7 +39,7 @@ function LoginForm() {
               name="email"
               type="email"
               required
-              className="w-full border border-border rounded-sm px-3 py-2.5 bg-surface focus:border-accent"
+              className="w-full border border-input-line rounded-sm px-3 py-2.5 bg-input focus:border-input-focus"
             />
           </div>
           <div>
@@ -47,7 +47,7 @@ function LoginForm() {
               <label className="block text-sm" htmlFor="password">
                 Password
               </label>
-              <Link href="/reset-password" className="text-sm text-accent hover:underline">
+              <Link href="/reset-password" className="text-sm text-link hover:underline">
                 Forgot password?
               </Link>
             </div>
@@ -56,12 +56,12 @@ function LoginForm() {
               name="password"
               type="password"
               required
-              className="w-full border border-border rounded-sm px-3 py-2.5 bg-surface focus:border-accent"
+              className="w-full border border-input-line rounded-sm px-3 py-2.5 bg-input focus:border-input-focus"
             />
           </div>
 
           {state?.error && (
-            <p className="text-sm text-danger bg-danger-soft rounded-sm px-3 py-2">{state.error}</p>
+            <p className="text-sm text-error bg-error-bg rounded-sm px-3 py-2">{state.error}</p>
           )}
 
           <SubmitButton pendingText="Logging in…" className="w-full">
@@ -69,9 +69,9 @@ function LoginForm() {
           </SubmitButton>
         </form>
 
-        <p className="mt-6 text-sm text-ink-soft">
+        <p className="mt-6 text-sm text-muted">
           Don&apos;t have an account?{" "}
-          <Link href="/signup" className="text-accent hover:underline">
+          <Link href="/signup" className="text-link hover:underline">
             Sign up
           </Link>
         </p>
