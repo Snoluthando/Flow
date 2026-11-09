@@ -1,11 +1,11 @@
 const STYLES: Record<string, string> = {
-  draft: "bg-paper text-ink-soft border border-border",
-  sent: "bg-accent-soft text-accent",
-  viewed: "bg-accent-soft text-accent",
-  partially_paid: "bg-amber-soft text-amber",
-  paid: "bg-accent text-white",
-  overdue: "bg-danger-soft text-danger",
-  cancelled: "bg-paper text-ink-soft border border-border line-through",
+  draft: "bg-badge-draft-bg text-badge-draft border border-badge-draft-line",
+  sent: "bg-badge-sent-bg text-badge-sent",
+  viewed: "bg-badge-viewed-bg text-badge-viewed",
+  partially_paid: "bg-badge-partial-bg text-badge-partial",
+  paid: "bg-badge-paid-bg text-badge-paid",
+  overdue: "bg-badge-overdue-bg text-badge-overdue",
+  cancelled: "bg-badge-cancelled-bg text-badge-cancelled border border-badge-draft-line line-through",
 };
 
 const LABELS: Record<string, string> = {

@@ -29,11 +29,11 @@ export default async function CustomersPage({
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-medium">Customers</h1>
-          <p className="mt-1 text-sm text-ink-soft">People and businesses you invoice.</p>
+          <p className="mt-1 text-sm text-muted">People and businesses you invoice.</p>
         </div>
         <Link
           href="/customers/new"
-          className="bg-accent text-white px-4 py-2 rounded-sm text-sm hover:opacity-90"
+          className="bg-btn text-btn-text px-4 py-2 rounded-sm text-sm hover:opacity-90"
         >
           Add customer
         </Link>
@@ -45,27 +45,27 @@ export default async function CustomersPage({
           name="q"
           defaultValue={q}
           placeholder="Search customers…"
-          className="w-full max-w-xs border border-border rounded-sm px-3 py-2 bg-surface focus:border-accent text-sm"
+          className="w-full max-w-xs border border-input-line rounded-sm px-3 py-2 bg-input focus:border-input-focus text-sm"
         />
       </form>
 
-      <div className="mt-6 border border-border rounded-sm bg-surface divide-y divide-border">
+      <div className="mt-6 border border-card-line rounded-sm bg-card divide-y divide-line">
         {customers && customers.length > 0 ? (
           customers.map((c) => (
             <Link
               key={c.id}
               href={`/customers/${c.id}`}
-              className="flex items-center justify-between px-4 py-3 hover:bg-paper transition-colors"
+              className="flex items-center justify-between px-4 py-3 hover:bg-row-hover transition-colors"
             >
               <div>
                 <p className="font-medium text-sm">{c.name}</p>
-                <p className="text-xs text-ink-soft">{c.email || "No email on file"}</p>
+                <p className="text-xs text-muted">{c.email || "No email on file"}</p>
               </div>
-              <p className="text-xs text-ink-soft">{c.phone}</p>
+              <p className="text-xs text-muted">{c.phone}</p>
             </Link>
           ))
         ) : (
-          <div className="px-4 py-10 text-center text-sm text-ink-soft">
+          <div className="px-4 py-10 text-center text-sm text-muted">
             {q ? "No customers match that search." : "No customers yet. Add your first one to get started."}
           </div>
         )}

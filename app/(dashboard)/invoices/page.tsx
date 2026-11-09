@@ -65,11 +65,11 @@ export default async function InvoicesPage({
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-medium">Invoices</h1>
-          <p className="mt-1 text-sm text-ink-soft">Everything you&apos;ve billed, in one place.</p>
+          <p className="mt-1 text-sm text-muted">Everything you&apos;ve billed, in one place.</p>
         </div>
         <Link
           href="/invoices/new"
-          className="bg-accent text-white px-4 py-2 rounded-sm text-sm hover:opacity-90"
+          className="bg-btn text-btn-text px-4 py-2 rounded-sm text-sm hover:opacity-90"
         >
           New invoice
         </Link>
@@ -83,7 +83,7 @@ export default async function InvoicesPage({
             name="q"
             defaultValue={q}
             placeholder="Search invoice number…"
-            className="border border-border rounded-sm px-3 py-2 bg-surface focus:border-accent text-sm w-56"
+            className="border border-input-line rounded-sm px-3 py-2 bg-input focus:border-input-focus text-sm w-56"
           />
         </form>
         <div className="flex gap-1 text-sm">
@@ -93,8 +93,8 @@ export default async function InvoicesPage({
               href={f.value ? `/invoices?status=${f.value}` : "/invoices"}
               className={`px-2.5 py-1 rounded-sm ${
                 (status ?? "") === f.value
-                  ? "bg-ink text-white"
-                  : "text-ink-soft hover:bg-paper"
+                  ? "bg-tab-active-bg text-tab-active"
+                  : "text-tab hover:bg-tab-hover-bg"
               }`}
             >
               {f.label}
@@ -103,20 +103,20 @@ export default async function InvoicesPage({
         </div>
       </div>
 
-      <div className="mt-6 border border-border rounded-sm bg-surface divide-y divide-border">
+      <div className="mt-6 border border-card-line rounded-sm bg-card divide-y divide-line">
         {filtered.length > 0 ? (
           filtered.map((inv) => (
             <Link
               key={inv.id}
               href={`/invoices/${inv.id}`}
-              className="flex items-center justify-between px-4 py-3 hover:bg-paper transition-colors"
+              className="flex items-center justify-between px-4 py-3 hover:bg-row-hover transition-colors"
             >
               <div className="flex items-center gap-4">
                 <span className="text-sm font-medium w-28">{inv.invoice_number}</span>
-                <span className="text-sm text-ink-soft">{inv.customerName ?? "—"}</span>
+                <span className="text-sm text-muted">{inv.customerName ?? "—"}</span>
               </div>
               <div className="flex items-center gap-4">
-                <span className="text-xs text-ink-soft">
+                <span className="text-xs text-muted">
                   {inv.due_date ? `Due ${inv.due_date}` : "No due date"}
                 </span>
                 <StatusBadge status={inv.effectiveStatus} />
@@ -127,7 +127,7 @@ export default async function InvoicesPage({
             </Link>
           ))
         ) : (
-          <div className="px-4 py-10 text-center text-sm text-ink-soft">
+          <div className="px-4 py-10 text-center text-sm text-muted">
             No invoices match yet.
           </div>
         )}

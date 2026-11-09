@@ -22,7 +22,7 @@ export function PaymentForm({ invoiceId }: { invoiceId: string }) {
             min="0.01"
             step="0.01"
             required
-            className="w-full border border-border rounded-sm px-2.5 py-2 text-sm bg-surface focus:border-accent"
+            className="w-full border border-input-line rounded-sm px-2.5 py-2 text-sm bg-input focus:border-input-focus"
           />
         </div>
         <div>
@@ -35,7 +35,7 @@ export function PaymentForm({ invoiceId }: { invoiceId: string }) {
             type="date"
             defaultValue={today}
             required
-            className="w-full border border-border rounded-sm px-2.5 py-2 text-sm bg-surface focus:border-accent"
+            className="w-full border border-input-line rounded-sm px-2.5 py-2 text-sm bg-input focus:border-input-focus"
           />
         </div>
       </div>
@@ -47,13 +47,13 @@ export function PaymentForm({ invoiceId }: { invoiceId: string }) {
           id="reference"
           name="reference"
           placeholder="e.g. bank transfer ref"
-          className="w-full border border-border rounded-sm px-2.5 py-2 text-sm bg-surface focus:border-accent"
+          className="w-full border border-input-line rounded-sm px-2.5 py-2 text-sm bg-input focus:border-input-focus"
         />
       </div>
       <input type="hidden" name="provider" value="manual" />
 
       {state?.error && (
-        <p className="text-sm text-danger bg-danger-soft rounded-sm px-3 py-2">{state.error}</p>
+        <p className="text-sm text-error bg-error-bg rounded-sm px-3 py-2">{state.error}</p>
       )}
 
       <SubmitButton pendingText="Recording…" className="w-full text-sm py-2">

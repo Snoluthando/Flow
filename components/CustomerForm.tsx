@@ -35,7 +35,7 @@ export function CustomerForm({
           name="name"
           defaultValue={customer?.name}
           required
-          className="w-full border border-border rounded-sm px-3 py-2.5 bg-surface focus:border-accent"
+          className="w-full border border-input-line rounded-sm px-3 py-2.5 bg-input focus:border-input-focus"
         />
       </div>
       <div className="grid grid-cols-2 gap-4">
@@ -48,7 +48,7 @@ export function CustomerForm({
             name="email"
             type="email"
             defaultValue={customer?.email ?? ""}
-            className="w-full border border-border rounded-sm px-3 py-2.5 bg-surface focus:border-accent"
+            className="w-full border border-input-line rounded-sm px-3 py-2.5 bg-input focus:border-input-focus"
           />
         </div>
         <div>
@@ -59,7 +59,7 @@ export function CustomerForm({
             id="phone"
             name="phone"
             defaultValue={customer?.phone ?? ""}
-            className="w-full border border-border rounded-sm px-3 py-2.5 bg-surface focus:border-accent"
+            className="w-full border border-input-line rounded-sm px-3 py-2.5 bg-input focus:border-input-focus"
           />
         </div>
       </div>
@@ -72,7 +72,7 @@ export function CustomerForm({
           name="address"
           rows={2}
           defaultValue={customer?.address ?? ""}
-          className="w-full border border-border rounded-sm px-3 py-2.5 bg-surface focus:border-accent"
+          className="w-full border border-input-line rounded-sm px-3 py-2.5 bg-input focus:border-input-focus"
         />
       </div>
       <div>
@@ -84,12 +84,12 @@ export function CustomerForm({
           name="notes"
           rows={2}
           defaultValue={customer?.notes ?? ""}
-          className="w-full border border-border rounded-sm px-3 py-2.5 bg-surface focus:border-accent"
+          className="w-full border border-input-line rounded-sm px-3 py-2.5 bg-input focus:border-input-focus"
         />
       </div>
 
       {state?.error && (
-        <p className="text-sm text-danger bg-danger-soft rounded-sm px-3 py-2">{state.error}</p>
+        <p className="text-sm text-error bg-error-bg rounded-sm px-3 py-2">{state.error}</p>
       )}
 
       <SubmitButton pendingText="Saving…">{submitLabel}</SubmitButton>

@@ -8,7 +8,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
   return (
     <div className="flex min-h-screen">
       <Sidebar businessName={business.name} />
-      <main className="flex-1 px-8 py-8 max-w-5xl">{children}</main>
+      <main className="min-w-0 max-w-6xl flex-1 px-6 py-6 lg:px-8">{children}</main>
       <NewInvoiceFab />
     </div>
   );

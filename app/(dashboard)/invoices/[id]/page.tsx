@@ -50,7 +50,7 @@ export default async function InvoiceDetailPage({
 
   return (
     <div>
-      <Link href="/invoices" className="text-sm text-ink-soft hover:text-ink">
+      <Link href="/invoices" className="text-sm text-muted hover:text-body">
         ← Invoices
       </Link>
 
@@ -60,7 +60,7 @@ export default async function InvoiceDetailPage({
             <h1 className="text-2xl font-medium font-serif-display">{invoice.invoice_number}</h1>
             <StatusBadge status={effectiveStatus} />
           </div>
-          <p className="mt-1 text-sm text-ink-soft">
+          <p className="mt-1 text-sm text-muted">
             <Link href={`/customers/${invoice.customers.id}`} className="hover:underline">
               {invoice.customers.name}
             </Link>
@@ -70,7 +70,7 @@ export default async function InvoiceDetailPage({
           {invoice.status === "draft" && (
             <Link
               href={`/invoices/${invoice.id}/edit`}
-              className="border border-border px-3 py-1.5 rounded-sm hover:border-ink"
+              className="border border-btn-outline px-3 py-1.5 rounded-sm hover:border-btn-outline-hover"
             >
               Edit
             </Link>
@@ -79,12 +79,12 @@ export default async function InvoiceDetailPage({
             href={`/api/invoices/${invoice.id}/pdf`}
             target="_blank"
             rel="noreferrer"
-            className="border border-border px-3 py-1.5 rounded-sm hover:border-ink"
+            className="border border-btn-outline px-3 py-1.5 rounded-sm hover:border-btn-outline-hover"
           >
             View PDF
           </a>
           <form action={boundDuplicate}>
-            <button type="submit" className="border border-border px-3 py-1.5 rounded-sm hover:border-ink">
+            <button type="submit" className="border border-btn-outline px-3 py-1.5 rounded-sm hover:border-btn-outline-hover">
               Duplicate
             </button>
           </form>
@@ -105,21 +105,21 @@ export default async function InvoiceDetailPage({
       </div>
 
       <div className="mt-8 grid lg:grid-cols-[1fr_280px] gap-8">
-        <div className="border border-border rounded-sm bg-surface p-6">
+        <div className="border border-card-line rounded-sm bg-card p-6">
           <div className="grid sm:grid-cols-2 gap-4 text-sm mb-6">
             <div>
-              <p className="text-xs text-ink-soft">Issued</p>
+              <p className="text-xs text-muted">Issued</p>
               <p>{invoice.issue_date}</p>
             </div>
             <div>
-              <p className="text-xs text-ink-soft">Due</p>
+              <p className="text-xs text-muted">Due</p>
               <p>{invoice.due_date ?? "—"}</p>
             </div>
           </div>
 
           <table className="w-full text-sm">
             <thead>
-              <tr className="text-left text-xs text-ink-soft border-b border-border">
+              <tr className="text-left text-xs text-muted border-b border-table-line">
                 <th className="pb-2 font-normal">Description</th>
                 <th className="pb-2 font-normal text-right">Qty</th>
                 <th className="pb-2 font-normal text-right">Unit price</th>
@@ -128,7 +128,7 @@ export default async function InvoiceDetailPage({
             </thead>
             <tbody>
               {items.map((item: { id: string; description: string; quantity: number; unit_price: number; line_total: number }) => (
-                <tr key={item.id} className="border-b border-border last:border-b-0">
+                <tr key={item.id} className="border-b border-table-line last:border-b-0">
                   <td className="py-2">{item.description}</td>
                   <td className="py-2 text-right tabular-nums">{item.quantity}</td>
                   <td className="py-2 text-right tabular-nums">
@@ -143,25 +143,25 @@ export default async function InvoiceDetailPage({
           </table>
 
           <div className="mt-4 ml-auto max-w-xs space-y-1.5 text-sm">
-            <div className="flex justify-between text-ink-soft">
+            <div className="flex justify-between text-muted">
               <span>Subtotal</span>
               <span className="tabular-nums">{formatMoney(invoice.subtotal, invoice.currency)}</span>
             </div>
-            <div className="flex justify-between text-ink-soft">
+            <div className="flex justify-between text-muted">
               <span>Discount</span>
               <span className="tabular-nums">-{formatMoney(invoice.discount_total, invoice.currency)}</span>
             </div>
-            <div className="flex justify-between text-ink-soft">
+            <div className="flex justify-between text-muted">
               <span>Tax</span>
               <span className="tabular-nums">{formatMoney(invoice.tax_total, invoice.currency)}</span>
             </div>
-            <div className="border-t border-border pt-1.5 flex justify-between font-medium">
+            <div className="border-t border-line pt-1.5 flex justify-between font-medium">
               <span>Total</span>
               <span className="tabular-nums">{formatMoney(invoice.total, invoice.currency)}</span>
             </div>
             {invoice.amount_paid > 0 && (
               <>
-                <div className="flex justify-between text-accent">
+                <div className="flex justify-between text-success">
                   <span>Paid</span>
                   <span className="tabular-nums">-{formatMoney(invoice.amount_paid, invoice.currency)}</span>
                 </div>
@@ -174,8 +174,8 @@ export default async function InvoiceDetailPage({
           </div>
 
           {invoice.notes && (
-            <div className="mt-6 pt-4 border-t border-border">
-              <p className="text-xs text-ink-soft mb-1">Notes</p>
+            <div className="mt-6 pt-4 border-t border-line">
+              <p className="text-xs text-muted mb-1">Notes</p>
               <p className="text-sm whitespace-pre-wrap">{invoice.notes}</p>
             </div>
           )}
@@ -183,28 +183,28 @@ export default async function InvoiceDetailPage({
 
         <div className="space-y-6">
           {invoice.status === "draft" && (
-            <div className="border border-border rounded-sm bg-surface p-4">
+            <div className="border border-card-line rounded-sm bg-card p-4">
               <h2 className="text-sm font-medium mb-3">Send this invoice</h2>
               <SendInvoiceButton invoiceId={invoice.id} hasEmail={!!invoice.customers.email} />
             </div>
           )}
 
           {invoice.status !== "draft" && invoice.status !== "cancelled" && (
-            <div className="border border-border rounded-sm bg-surface p-4">
+            <div className="border border-card-line rounded-sm bg-card p-4">
               <h2 className="text-sm font-medium mb-3">Public link</h2>
-              <p className="text-xs text-ink-soft break-all">{publicUrl}</p>
+              <p className="text-xs text-muted break-all">{publicUrl}</p>
             </div>
           )}
 
           {invoice.status !== "draft" && invoice.status !== "cancelled" && balanceDue > 0 && (
-            <div className="border border-border rounded-sm bg-surface p-4">
+            <div className="border border-card-line rounded-sm bg-card p-4">
               <h2 className="text-sm font-medium mb-3">Record a payment</h2>
               <PaymentForm invoiceId={invoice.id} />
             </div>
           )}
 
           {payments.length > 0 && (
-            <div className="border border-border rounded-sm bg-surface p-4">
+            <div className="border border-card-line rounded-sm bg-card p-4">
               <h2 className="text-sm font-medium mb-3">Payment history</h2>
               <div className="space-y-2">
                 {payments.map((p: { id: string; amount: number; paid_at: string; reference: string | null }) => {
@@ -213,7 +213,7 @@ export default async function InvoiceDetailPage({
                     <div key={p.id} className="flex items-center justify-between text-sm">
                       <div>
                         <p className="tabular-nums">{formatMoney(p.amount, invoice.currency)}</p>
-                        <p className="text-xs text-ink-soft">
+                        <p className="text-xs text-muted">
                           {p.paid_at} {p.reference ? `· ${p.reference}` : ""}
                         </p>
                       </div>

@@ -63,8 +63,8 @@ export default async function PublicInvoicePage({
   const balanceDue = Math.max(invoice.total - invoice.amount_paid, 0);
 
   return (
-    <div className="min-h-screen bg-paper py-12 px-4">
-      <div className="mx-auto max-w-2xl bg-surface border border-border rounded-sm p-8">
+    <div className="min-h-screen bg-page py-12 px-4">
+      <div className="mx-auto max-w-2xl bg-card border border-card-line rounded-sm p-8">
         <div className="flex items-start justify-between mb-8">
           <div className="flex items-start gap-4">
             {business.logo_url && (
@@ -72,14 +72,14 @@ export default async function PublicInvoicePage({
               <img
                 src={business.logo_url}
                 alt={`${business.name} logo`}
-                className="h-12 w-12 object-contain rounded-sm border border-border"
+                className="h-12 w-12 object-contain rounded-sm border border-line"
               />
             )}
             <div>
               <h1 className="font-serif-display text-xl">{business.name}</h1>
-              {business.address && <p className="text-sm text-ink-soft mt-1">{business.address}</p>}
-              {business.email && <p className="text-sm text-ink-soft">{business.email}</p>}
-              {business.phone && <p className="text-sm text-ink-soft">{business.phone}</p>}
+              {business.address && <p className="text-sm text-muted mt-1">{business.address}</p>}
+              {business.email && <p className="text-sm text-muted">{business.email}</p>}
+              {business.phone && <p className="text-sm text-muted">{business.phone}</p>}
             </div>
           </div>
           <div className="text-right">
@@ -97,22 +97,22 @@ export default async function PublicInvoicePage({
 
         <div className="grid sm:grid-cols-3 gap-4 mb-8 text-sm">
           <div>
-            <p className="text-xs text-ink-soft">Billed to</p>
+            <p className="text-xs text-muted">Billed to</p>
             <p>{customer.name}</p>
           </div>
           <div>
-            <p className="text-xs text-ink-soft">Issued</p>
+            <p className="text-xs text-muted">Issued</p>
             <p>{invoice.issue_date}</p>
           </div>
           <div>
-            <p className="text-xs text-ink-soft">Due</p>
+            <p className="text-xs text-muted">Due</p>
             <p>{invoice.due_date ?? "—"}</p>
           </div>
         </div>
 
         <table className="w-full text-sm">
           <thead>
-            <tr className="text-left text-xs text-ink-soft border-b border-border">
+            <tr className="text-left text-xs text-muted border-b border-table-line">
               <th className="pb-2 font-normal">Description</th>
               <th className="pb-2 font-normal text-right">Qty</th>
               <th className="pb-2 font-normal text-right">Unit price</th>
@@ -121,7 +121,7 @@ export default async function PublicInvoicePage({
           </thead>
           <tbody>
             {items.map((item, i) => (
-              <tr key={i} className="border-b border-border last:border-b-0">
+              <tr key={i} className="border-b border-table-line last:border-b-0">
                 <td className="py-2">{item.description}</td>
                 <td className="py-2 text-right tabular-nums">{item.quantity}</td>
                 <td className="py-2 text-right tabular-nums">
@@ -139,7 +139,7 @@ export default async function PublicInvoicePage({
           <Row label="Subtotal" value={formatMoney(invoice.subtotal, invoice.currency)} />
           <Row label="Discount" value={`-${formatMoney(invoice.discount_total, invoice.currency)}`} />
           <Row label="Tax" value={formatMoney(invoice.tax_total, invoice.currency)} />
-          <div className="border-t border-border pt-1.5 flex justify-between font-medium">
+          <div className="border-t border-line pt-1.5 flex justify-between font-medium">
             <span>Total</span>
             <span className="tabular-nums">{formatMoney(invoice.total, invoice.currency)}</span>
           </div>
@@ -155,14 +155,14 @@ export default async function PublicInvoicePage({
         </div>
 
         {invoice.notes && (
-          <div className="mt-6 pt-4 border-t border-border">
-            <p className="text-xs text-ink-soft mb-1">Notes</p>
+          <div className="mt-6 pt-4 border-t border-line">
+            <p className="text-xs text-muted mb-1">Notes</p>
             <p className="text-sm whitespace-pre-wrap">{invoice.notes}</p>
           </div>
         )}
 
-        <div className="mt-8 pt-6 border-t border-border flex items-center justify-between">
-          <p className="text-xs text-ink-soft">
+        <div className="mt-8 pt-6 border-t border-line flex items-center justify-between">
+          <p className="text-xs text-muted">
             {business.tax_number ? `Tax no: ${business.tax_number}` : ""}
           </p>
           <a
@@ -182,7 +182,7 @@ export default async function PublicInvoicePage({
 
 function Row({ label, value }: { label: string; value: string }) {
   return (
-    <div className="flex justify-between text-ink-soft">
+    <div className="flex justify-between text-muted">
       <span>{label}</span>
       <span className="tabular-nums">{value}</span>
     </div>

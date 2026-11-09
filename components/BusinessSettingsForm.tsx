@@ -40,19 +40,19 @@ export function BusinessSettingsForm({ business }: { business: Business }) {
         </div>
       </fieldset>
 
-      <fieldset className="space-y-4 pt-4 border-t border-border">
+      <fieldset className="space-y-4 pt-4 border-t border-line">
         <legend className="text-sm font-medium mb-1">Logo &amp; invoice theme</legend>
-        <p className="text-xs text-ink-soft -mt-2">
+        <p className="text-xs text-muted -mt-2">
           Both appear on your generated invoice PDFs.
         </p>
 
         <div className="flex items-center gap-4">
-          <div className="h-16 w-16 rounded-sm border border-border bg-paper flex items-center justify-center overflow-hidden shrink-0">
+          <div className="h-16 w-16 rounded-sm border border-line bg-subtle flex items-center justify-center overflow-hidden shrink-0">
             {logoPreview && !removeLogo ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img src={logoPreview} alt="Logo preview" className="h-full w-full object-contain" />
             ) : (
-              <span className="text-xs text-ink-soft">No logo</span>
+              <span className="text-xs text-muted">No logo</span>
             )}
           </div>
           <div className="space-y-1">
@@ -80,7 +80,7 @@ export function BusinessSettingsForm({ business }: { business: Business }) {
               </button>
             )}
             <input type="hidden" name="remove_logo" value={removeLogo ? "1" : "0"} />
-            <p className="text-xs text-ink-soft">PNG, JPEG, WebP or SVG. Up to 2MB.</p>
+            <p className="text-xs text-muted">PNG, JPEG, WebP or SVG. Up to 2MB.</p>
           </div>
         </div>
 
@@ -95,7 +95,7 @@ export function BusinessSettingsForm({ business }: { business: Business }) {
               type="color"
               value={accentColor}
               onChange={(e) => setAccentColor(e.target.value)}
-              className="h-9 w-14 border border-border rounded-sm bg-surface cursor-pointer"
+              className="h-9 w-14 border border-input-line rounded-sm bg-input cursor-pointer"
             />
             <div className="flex gap-1.5">
               {PRESET_COLORS.map((c) => (
@@ -103,18 +103,18 @@ export function BusinessSettingsForm({ business }: { business: Business }) {
                   key={c}
                   type="button"
                   onClick={() => setAccentColor(c)}
-                  className="h-6 w-6 rounded-full border border-border"
+                  className="h-6 w-6 rounded-full border border-line"
                   style={{ backgroundColor: c }}
                   aria-label={`Use ${c}`}
                 />
               ))}
             </div>
-            <span className="text-xs text-ink-soft tabular-nums">{accentColor}</span>
+            <span className="text-xs text-muted tabular-nums">{accentColor}</span>
           </div>
         </div>
       </fieldset>
 
-      <fieldset className="space-y-4 pt-4 border-t border-border">
+      <fieldset className="space-y-4 pt-4 border-t border-line">
         <legend className="text-sm font-medium mb-1">Invoice defaults</legend>
         <div className="grid grid-cols-2 gap-4">
           <div>
@@ -125,7 +125,7 @@ export function BusinessSettingsForm({ business }: { business: Business }) {
               id="default_currency"
               name="default_currency"
               defaultValue={business.default_currency}
-              className="w-full border border-border rounded-sm px-3 py-2.5 bg-surface focus:border-accent"
+              className="w-full border border-input-line rounded-sm px-3 py-2.5 bg-input focus:border-input-focus"
             >
               {CURRENCIES.map((c) => (
                 <option key={c} value={c}>
@@ -164,10 +164,10 @@ export function BusinessSettingsForm({ business }: { business: Business }) {
       </fieldset>
 
       {state?.error && (
-        <p className="text-sm text-danger bg-danger-soft rounded-sm px-3 py-2">{state.error}</p>
+        <p className="text-sm text-error bg-error-bg rounded-sm px-3 py-2">{state.error}</p>
       )}
       {state?.success && (
-        <p className="text-sm text-accent bg-accent-soft rounded-sm px-3 py-2">Settings saved.</p>
+        <p className="text-sm text-success bg-success-bg rounded-sm px-3 py-2">Settings saved.</p>
       )}
 
       <SubmitButton pendingText="Saving…">Save settings</SubmitButton>
@@ -202,7 +202,7 @@ function Field({
         step={step}
         required={required}
         defaultValue={defaultValue}
-        className="w-full border border-border rounded-sm px-3 py-2.5 bg-surface focus:border-accent"
+        className="w-full border border-input-line rounded-sm px-3 py-2.5 bg-input focus:border-input-focus"
       />
     </div>
   );
@@ -230,7 +230,7 @@ function TextArea({
         rows={3}
         defaultValue={defaultValue}
         placeholder={placeholder}
-        className="w-full border border-border rounded-sm px-3 py-2.5 bg-surface focus:border-accent"
+        className="w-full border border-input-line rounded-sm px-3 py-2.5 bg-input focus:border-input-focus"
       />
     </div>
   );
